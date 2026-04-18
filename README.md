@@ -1,4 +1,4 @@
-# estoque
+# Estoque
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/bc59f203-835c-49d6-a4cf-21d9d95c04ed" />
 </div>
