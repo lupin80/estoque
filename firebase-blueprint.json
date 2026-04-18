@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Inventory item definition",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product name" },
+        "sku": { "type": "string", "description": "Stock Keeping Unit" },
+        "category": { "type": "string", "description": "Product category" },
+        "price": { "type": "number", "description": "Unit price" },
+        "stock": { "type": "number", "description": "Current stock level" },
+        "maxStock": { "type": "number", "description": "Maximum capacity" },
+        "image": { "type": "string", "description": "Image URL" },
+        "status": { "type": "string", "description": "Stock status (Estável, Baixo Estoque, etc)" },
+        "invoiceNumber": { "type": "string", "description": "Invoice number" },
+        "supplierId": { "type": "string", "description": "Reference to supplier ID" },
+        "ncm": { "type": "string", "description": "Fiscal code" },
+        "icms": { "type": "number", "description": "Tax rate" },
+        "ipi": { "type": "number", "description": "Tax rate" },
+        "pis": { "type": "number", "description": "Tax rate" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "sku", "category", "price", "stock", "maxStock"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Supplier information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Company name" },
+        "code": { "type": "string", "description": "Supplier code" },
+        "cnpj": { "type": "string", "description": "Tax ID" },
+        "stateReg": { "type": "string", "description": "State registration" },
+        "city": { "type": "string", "description": "City and State" },
+        "address": { "type": "string", "description": "Full address" },
+        "phone": { "type": "string", "description": "Contact phone" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "cnpj"]
+    },
+    "Movement": {
+      "title": "Movement",
+      "description": "Inventory movement record",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "Reference to product" },
+        "type": { "type": "string", "enum": ["ENTRADA", "SAÍDA", "TRANSFERÊNCIA"] },
+        "quantity": { "type": "number" },
+        "origin": { "type": "string" },
+        "destination": { "type": "string" },
+        "reason": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "type", "quantity", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of inventory products"
+    },
+    "/suppliers/{supplierId}": {
+      "schema": "Supplier",
+      "description": "Collection of suppliers"
+    },
+    "/movements/{movementId}": {
+      "schema": "Movement",
+      "description": "History of stock movements"
+    }
+  }
+}

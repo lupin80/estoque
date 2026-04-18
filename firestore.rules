@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "fa.barbosa80@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidString(val, min, max) {
+      return val is string && val.size() >= min && val.size() <= max;
+    }
+
+    function isValidNumber(val, min) {
+      return val is number && val >= min;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'sku', 'category', 'price', 'stock', 'maxStock']) &&
+             isValidString(data.name, 1, 100) &&
+             isValidString(data.sku, 1, 50) &&
+             isValidNumber(data.price, 0) &&
+             isValidNumber(data.stock, 0) &&
+             isValidNumber(data.maxStock, 1);
+    }
+
+    function isValidSupplier(data) {
+      return data.keys().hasAll(['name', 'cnpj']) &&
+             isValidString(data.name, 1, 150) &&
+             isValidString(data.cnpj, 14, 20);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow update: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /suppliers/{supplierId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidSupplier(request.resource.data);
+      allow update: if isAuthenticated() && isValidSupplier(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /movements/{movementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    match /destinations/{destId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidString(request.resource.data.name, 1, 100);
+      allow update, delete: if isAdmin();
+    }
+  }
+}

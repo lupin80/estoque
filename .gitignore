@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+.env
+vendor/
+api/config/database.php
+config/database.php
+.cache/
