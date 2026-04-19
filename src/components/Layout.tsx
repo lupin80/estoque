@@ -31,7 +31,11 @@ interface SidebarProps {
   onViewChange: (view: View) => void;
 }
 
+/* user passed as prop if needed */
+
 export function Sidebar({ currentView, onViewChange }: SidebarProps) {
+  const { user } = useAuth();
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'inventory', label: 'Estoque', icon: Package },
@@ -41,7 +45,6 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
     { id: 'abc-analysis', label: 'Curva ABC', icon: TrendingUp },
     { id: 'reports', label: 'Relatórios', icon: FileText },
 { id: 'deleted-items', label: 'Excluídos', icon: Trash2 },
-    { id: 'users', label: 'Usuários', icon: User },
   ] as const;
 
   return (
@@ -93,6 +96,20 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           <Settings className="w-5 h-5" />
           <span className="text-sm">Configurações</span>
         </button>
+        {user?.role === 'admin' && (
+          <button 
+            onClick={() => onViewChange('users')}
+            className={cn(
+              "w-full flex items-center gap-3 px-4 py-2 transition-all rounded-md",
+              currentView === 'users' 
+                ? "text-secondary bg-secondary/10 font-bold" 
+                : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+            )}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-sm">Usuários</span>
+          </button>
+        )}
         <button 
           onClick={() => onViewChange('support')}
           className={cn(
@@ -350,12 +367,12 @@ export function TopBar({ onViewChange, searchQuery, onSearchChange }: {
             {/* User Section */}
             <div className="flex items-center gap-3">
               <div className="hidden lg:flex flex-col items-end">
-                <p className="text-xs font-bold text-on-surface">{user?.displayName}</p>
-                <p className="text-[10px] text-on-surface-variant uppercase tracking-tighter">{user?.email}</p>
+<p className="text-xs font-bold text-on-surface">{user?.name || 'Usuário'}</p>
+<p className="text-[10px] text-on-surface-variant uppercase tracking-tighter">{user?.email || ''}</p>
               </div>
               <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-surface-container-highest overflow-hidden ring-2 ring-surface-container-highest">
                 <img
-                  src={user?.photoURL || "https://picsum.photos/seed/user/100/100"}
+src={user ? `https://picsum.photos/seed/${user.email}/100/100` : "https://picsum.photos/seed/user/100/100"}
                   alt="Profile"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
