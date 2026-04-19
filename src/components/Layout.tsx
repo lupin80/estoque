@@ -24,7 +24,7 @@ import {
 import { cn } from '../lib/utils';
 import { useAuth } from './AuthProvider';
 
-export type View = 'dashboard' | 'inventory' | 'products' | 'movements' | 'suppliers' | 'product-detail' | 'deleted-items' | 'settings' | 'support' | 'reports' | 'abc-analysis' | 'users';
+export type View = 'dashboard' | 'inventory' | 'products' | 'movements' | 'suppliers' | 'product-detail' | 'deleted-items' | 'settings' | 'support' | 'reports' | 'abc-analysis';
 
 interface SidebarProps {
   currentView: View;
@@ -96,20 +96,6 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           <Settings className="w-5 h-5" />
           <span className="text-sm">Configurações</span>
         </button>
-        {user?.role === 'admin' && (
-          <button 
-            onClick={() => onViewChange('users')}
-            className={cn(
-              "w-full flex items-center gap-3 px-4 py-2 transition-all rounded-md",
-              currentView === 'users' 
-                ? "text-secondary bg-secondary/10 font-bold" 
-                : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-            )}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm">Usuários</span>
-          </button>
-        )}
         <button 
           onClick={() => onViewChange('support')}
           className={cn(
